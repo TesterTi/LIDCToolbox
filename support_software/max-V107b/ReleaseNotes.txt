@@ -1,0 +1,391 @@
+ReleaseNotes.txt
+----------------
+
+
+------------------------------------------------------------------------------------------------
+Copyright 2006 - 2010
+THE REGENTS OF THE UNIVERSITY OF MICHIGAN
+ALL RIGHTS RESERVED
+
+The software and supporting documentation was developed by the
+
+         Digital Image Processing Laboratory
+         Department of Radiology
+         University of Michigan
+         1500 East Medical Center Dr.
+         Ann Arbor, MI 48109
+
+It is funded in part by DHHS/NIH/NCI 1 U01 CA91099-01.
+
+IT IS THE RESPONSIBILITY OF THE USER TO CONFIGURE AND/OR MODIFY THE SOFTWARE TO PERFORM THE 
+OPERATIONS THAT ARE REQUIRED BY THE USER.
+
+THIS SOFTWARE IS PROVIDED AS IS, WITHOUT REPRESENTATION FROM THE UNIVERSITY OF MICHIGAN AS 
+TO ITS FITNESS FOR ANY PURPOSE, AND WITHOUT WARRANTY BY THE UNIVERSITY OF MICHIGAN OF ANY 
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE REGENTS OF THE UNIVERSITY OF 
+MICHIGAN SHALL NOT BE LIABLE FOR ANY DAMAGES, INCLUDING SPECIAL, INDIRECT, INCIDENTAL, 
+OR CONSEQUENTIAL DAMAGES, WITH RESPECT TO ANY CLAIM ARISING OUT OF OR IN CONNECTION WITH 
+THE USE OF THE SOFTWARE, EVEN IF IT HAS BEEN OR IS HEREAFTER ADVISED OF THE POSSIBILITY 
+OF SUCH DAMAGES.
+
+PERMISSION IS GRANTED TO USE, COPY, CREATE DERIVATIVE WORKS AND REDISTRIBUTE THIS SOFTWARE 
+AND SUCH DERIVATIVE WORKS FOR ANY PURPOSE, SO LONG AS THIS ENTIRE COPYRIGHT NOTICE, 
+INCLUDING THE GRANT OF PERMISSION, AND DISCLAIMERS, APPEAR IN ALL COPIES MADE; AND SO LONG 
+AS THE NAME OF THE UNIVERSITY OF MICHIGAN IS NOT USED IN ANY ADVERTISING OR PUBLICITY 
+PERTAINING TO THE USE OR DISTRIBUTION OF THIS SOFTWARE WITHOUT SPECIFIC, WRITTEN PRIOR 
+AUTHORIZATION.
+------------------------------------------------------------------------------------------------
+
+
+MAX V1.07 - max-V107.pl
+
+--------------------------------
+
+This release of MAX continues its development, fixes some bugs, and adds a number of features.
+The reason for this release is to make MAX available to NCI/CIP. The following is a list of
+changes in this version in approximate order of relevance and importance.
+
+
+    Compute various volume measures; write-out to the <VolumeMeasures> tag section in the pmap XML
+      file. Because of this addition, bump VERSIONPMAPXML to 2.01.
+    
+    Parse <StudyInstanceUID> from <ResponseHeader> for inclusion in <DataInfoHeader> according to
+      NCI's (MIRC's) needs.
+    
+    Add function modify_reader_id to make anonymized reader names distinctive. Requested by Qinyan
+      Pan for AIM conversion.
+    
+    Modify sub approxeq to work-around a divide-by-zero error.
+    
+    Check to be sure we have an even number of readers for pmap median volume calculations; add
+      message ID 5406.
+    
+    Add code to check that the beginning and ending pixel coords are equal for each ROI.
+      Convert FATAL[6409] to ERROR[5407]. Add a connectivity check between the 1st and last points
+      to detect a gap (ERROR [5408]).
+    
+    Resolve confusion concerning what message ID 6408: Change its label from "INFO" to "FATAL".
+
+
+--------------------------------
+
+
+MAX V1.06 - max-V106.pl
+28 February 2008
+
+This release of MAX continues its development, fixes some bugs, and adds a number of features --
+namely ambiguity processing, QA error checking, and many changes related to user messages.  The 
+following is a list of important changes in this version in approximate order of relevance and
+importance.
+
+
+    Fix for a bug apparently introduced in V1.05: A nodule (large or small) that matches
+      nothing else should be assigned its own SNID; such an SNID would have only one constituent
+      nodule. V1.05 disregards this case and does not assign an SNID to these solitary nodules.
+      (announced in an email dated 11/8/2007)
+    
+    Disable non-nodule intra-reader proximity check by default since non-nodules being close
+      is for a given reader is reality -- not an error.  Can enable this by giving
+      --qa-ops=nonnodprox on the command line.  (Non-nodule intra-reader proximity is message ID
+      4511.)
+    
+    Add a new --xml-ops value: cxrrequest.  Triggers the writing of an XML file that is used
+      to form the CXR request.  It consists mainly of the sections for all large nodules along
+      with other tags according to the CXR request schema.
+    
+    Enhance sub check_for_narrow_contour: Re-wrote it to detect overlapping pixels as a
+      separate check.  Add NARROWNESSSEARCHOFFSET to Site_Max for use by this sub.  Break msg ID
+      4408 out into 4409 & 4410 for separate and detailed notification of narrow and overlapping
+      portions, respectively; the notification includes coordinate x & y values in such a way
+      that they can be easily parsed for automated handling of these warnings.
+    
+    Add code to sub simple_matching to check for intra-reader overlap of large nodules:
+      message ID = 5504.
+    
+    Add code to check for consistency of read type and message type between command line
+      options (and/or defaults) and XML file content.  Elevate message ID 3402 from warning to
+      fatal error (ID=6408).  Add message ID 6407.
+    
+    Add code to handle the case where no markings of any kind are found.
+    
+    Re-work the code that checks and processes the characteristics data, including improved
+      error checking (message IDs 5402, 5403, 5404 & 5405).
+    
+    Add code to filter certain user messages:
+    
+      * Eliminate repetitious, symmetrical messages that warn of proximity between various
+      combinations of small and non-nodules: If we say that A is too close to B, we don't need 
+      to say that B is too close to A.  See message IDs 4509, 4510 & 4511.
+    
+      * This one is not fully implemented: Eliminate repetitious messages about exclusion 
+      pixels without corresponding inclusion pixels (ID 4505).
+    
+    Clarify the text in user messages 6303, 6306, 6307, 6308, 6311, 6312, and 6315.  Modified
+      ID 3109 slightly.
+    
+    Added user messages 3110 & 3201; store these in the messages file.
+    
+    Add z coord (in mm.) to messages 4509, 4510, & 4511.
+    
+    Add code for --add-suffix.
+    
+    Add code to prepend the contents of the environmental variable MAXOPTS to the command line
+      options.
+    
+    Added an interrupt (control-C) handler: see sub interrupt_handler.
+    
+    Add code to insert any comments specified via --comments into the message log.
+    
+    Improve the plotting routines: sub simpleplot.
+    
+    Modified the code for handling --early-exit values: Shortened forms are acceptable.
+    
+    Minor re-writes of some text to stdout.
+
+
+The added command line options are described in the in-line help.
+
+A number of small utilities (getfiles.sh, get_image_geom-V201.pl, and getpix.sh) are included.
+These serve as examples of how you may wish to obtain pixel size, slice spacing, and a list of
+the files to process.  They are intended to be executed on the command line via the backtick
+method available in most common shells.
+
+Note that there is a new version of get_image_geom.pl: V2.01.  It includes the added capability
+of getting pixel dimension & slice spacing args & values from a file named image_geom.args which
+should be located (1) in the same directory with the images and the .flis (specific to UofM)
+file or (2) in max/ or (3) under the directory named by $startdir.  This is useful in case pixel
+dimension and/or slice spacing cannot be obtained automatically; in this case, they can be
+pre-loaded in the image_geom.args file instead.
+
+
+--------------------------------
+
+
+MAX - max-V105.pl - V1.05
+2 May 2007
+
+This release of MAX continues its development, fixes some bugs, and adds a number of features --
+namely ambiguity processing, QA error checking, and many changes related to user messages.  The 
+following is a list of important changes in this version in approximate order of relevance and
+importance.  (See also the addendum below.)
+
+    Implement the "ambiguity set" concept (replaces "ambiguity pair").  Add code to discern 
+      ambiguity type.  Change the XML accordingly.
+    Implement the new version of QA error #6.
+    Add a subroutine to check for region connectivity.
+    Add a subroutine to check for narrow contour sections.
+    Add code to keep track of non-matched non-nodules so that they can be listed separately in 
+      the XML.
+    Change the time and date attributes of the <RunInfo> tag to be consistent with time & date
+      tags in other XML files.
+    Add a number of command line options (--internaldoc, --file-in-pattern, and
+      --show-slice-spacing-messages), new values for --quality-assurance-ops, and a number of 
+      command option aliases.
+    Add a number of user messages and changes the severity level of some existing ones.
+    Rename PNID to SNID ("physical nodule ID" to "series nodule ID") inthe code, messages, and
+      XML.
+
+The added command line options are described in the in-line help.
+
+A new document, "MAX Addendum to LIDC QA", is included, along with V1.8 of Sam Armato's QA
+document -- both in PDF format.  Neither the developer's guide nor the specification document
+have been updated recently and thus are not included in this distribution.
+
+A number of small utilities (getfiles.sh, get_image_geom-V200.pl, and getpix.sh) are included.
+These serve as examples of how you may wish to obtain pixel size, slice spacing, and a list of
+the files to process.  They are intended to be executed on the command line via the backtick
+method available in most common shells.
+
+Addendum:
+6 July, 2009
+
+The following changes were omitted from the list above:
+
+    Eliminate the <Location> tag and move the location info into the <Object> tag in the
+      matching XML file.
+    Add the hostname to the "header" lines of the XML files.
+
+
+--------------------------------
+
+
+MAX - max-V104.pl - V1.04
+30 June 2006
+
+This release of MAX continues its development, fixes some bugs, and adds a number of features.  
+The following is a list of important changes in this version in approximate order of relevance/
+importance.
+
+    Bug fixes were made in code related to Z coordinate processing (filling the %z2siu hash and 
+      replace a constant in the call to sub approxeq).
+    Implement code that checks for QA error #6.  This is still somewhat preliminary but should be
+      usable.  See the developer's guide for usage suggestions.  Remove the code that forces an exit
+      on blinded reads: We need to be able to do matching on blinded reads in order to implement QA
+      #6.
+    Add the <Location...> tag in matching.xml (gives x,y,z location of small nodules and non-nodules
+      and is paired with the <Object...> tag in the <Matching> section).
+    Add the --message-type option.
+    Add an informational termination message (ID=3101) to the END block.
+    Re-do user messages (mostly error messages) to use the standard reporting mechanism.  Command
+      line errors continue *not* to use this facility.  Most other messages go to the messages file
+      so that they can be processed in the case where we run MAX in unattended mode.
+    Adjust verbosity levels on many error messages.
+    Convert msg id 4404 (inconsistent read type) to 3402.
+    Expand the code that extracts valid values for --action, --test, --xmlops, etc. for display
+      in the --internals section.
+    If --z-analyze is present, disable matching and pmap XML generation and skip the requirement for
+      --pixel-size.
+    Add aliases for --action: --exit-early, --forced-exit
+    Minor reformatting was made to some stdout output, and edits were made to the in-line help text.
+
+The added command line options are described in the in-line help.
+
+A new document, the developer's guide, is available for download, as well as an updated version
+of the specification document.  Note, however, that the spec doc has not been updated to include
+descriptions of the new QA-related algorithms.
+
+
+--------------------------------
+
+
+MAX - max-V104b1.pl - V1.04b1
+27 June 2006
+
+This is a beta release for Univ. of Chicago for QA purposes.  Regular release notes have not been
+written.  Refer instead for the Revision History block.  Development will continue on V1.04 
+pending results from UC's trials.
+
+
+--------------------------------
+
+
+MAX - max-V103.pl - V1.03
+13 June 2006
+
+This release of MAX continues its development, fixes some bugs, and adds a number of
+features.  The following is a list of important changes in this version in approximate order of
+relevance/importance.
+
+    Augment the non-nodule ID renaming code to prepend NN for IDs consisting of small integers.
+      (This was previously sent out to the sites as a patch.)  This solution is not robust but
+      is probably OK under the circumstances.
+    Change ZSPACINGTOLFILLIN in Site_Max from 0.001 to 0.0001.  (This was previously sent out to
+      the sites as an advisory.)
+    Add the SOP instance UID to pmap.xml (in the <Slice> tag).
+    Add code to write pmap XML data only for non-null pmaps; that is, skip the pmap XML 
+      creation for a pmap if the PNID of the pmap only contains small nodules.
+    Add "use FindBin;".
+    Add code to detect too few points in an ROI; see message IDs 3401 and 4403.
+    Clarify the text of various messages as well as text sent to stdout.
+    Add code for use in implementing checking for QA error #7.  The code in this version is
+      preliminary and will be developed further in later versions.
+    Change --save-data-structures to accept a list of values.
+    Add the --quality-assurance option.
+    Add the --dir-save option.
+    Add comments fo show where Unix/Linux utilities are used: "#@@@ Code location: UnixUtil-"
+    Modify code that sets $rundatetime *not* to use the Unix date utility.
+
+The added command line options are described in the in-line help.
+
+
+--------------------------------
+
+
+MAX - max-V102.pl - V1.02
+27 April 2006
+
+(This is a corrected version of the release notes that added several lines to the "changes"
+section below.)
+
+This release of MAX continues its development, fixes some bugs, and adds a number of
+features.  The following is a list of important changes in this version.
+
+    Add code to check whether a reader marks a small nodule whose sphere overlaps with a non-nodule.
+    Fix a bug in the code that wrote-out the ambiguity XML that was causing too many lines to be
+      written.
+    Add the --comments option.
+    Add additional command line option aliases for naming consistency.
+    Add code to warn if too few edgemap points are found in an inclusion ROI.
+    Overhaul the user message system (for error, warning, and info messages).
+    Add the --savemessages option: writes selected user messages to a file whose name is
+      defined in Site_Max as messages.txt.
+    Add user message info to the "internals" section (--internals).
+    Implement a number of fairly minor changes to the XML files produced by MAX.
+    Make a backup of an XML output file only if it has size > 0 (so that we don't needlessly
+      wipe-out an existing backup file with a zero-length one).
+    Disable the writing of all XML files if we are validating.  (Formerly, matching.xml wasn't
+      written but pmap.xml was due to some missing logic.)
+    Add code locator "tags" in the code to aid in coordinating with the spec doc.  For
+      example,
+          #@@@ Code location: A47
+      where the "#" must be in column 1, spaces are exactly as shown, and the label ("A47" in this
+      example) can be anything.
+    Change behavior for blinded data: Don't explicitly force an exit at the end of pass 1; instead,
+      exit by default after centroid calculations (which is just before matching) (unless forced
+      to exit earlier by --action).
+    Add additional command line option aliases for naming consistency.
+    Eliminate the creation of plotmsgs.txt.
+    Remove the "longest diameter" code.  A special version of MAX has been split-off that retains
+      this functionality.
+    Remove all code related to AVS field creation.
+    Update the in-line help.
+    
+The added command line options are described in the in-line help.
+
+New in this distro: MAX-SpecDoc-V1prelim.pdf, the preliminary version of a specification document
+for MAX.
+
+
+-------------------------------
+
+
+MAX - max.pl - V1.01
+10 April 2006
+
+This release of MAX continues its development, fixes some bugs, and adds a number of
+features.  The following is a list of important differences between this and the previous
+version:
+
+    Improve error handling and messages to the user.
+    Demote some fatal errors to warnings or to non-fatal errors.
+    Add code to deal with missing tags in the NIH (anonymized) version of the data.
+    Re-work much of the XML generation code for matching results and pmaps.  (The marking 
+      history XML file is not yet implemented.)
+    Augment the in-line help text that describes how the XML input files are identified, etc.
+    Add the --skipnumfilescheck option.
+    Add the --dirin (--dirname is an alias with this) and --dirout command line options.  
+      Defaults are set in Site_Max.
+    Re-work the --xmlops & --pmapops options: Implement defaults and add some code to show 
+      results of processing these options.
+    Get default for --sphere-diam from VIRTSPHEREDEFDIAM (in SiteMax).
+    Add the --zanalyze option (only rudimentary "analysis" is done at this point).
+    Add Site_Max to the constants display part of the --internals option.
+    Convert @contours to %contours to get around memory problems with large datasets.  This 
+      also makes MAX run much faster.
+
+The added command line options are described in the in-line help.
+
+
+-------------------------------
+
+
+MAX - max.pl - V1.00
+9 March 2006
+
+This is the first release of MAX - Multipurpose Application for Xml - for use by the LIDC
+Implementation Group.  It implements virtually all functions defined at the current time except
+for the following: the XML file that records marking history is incomplete in this version, and
+the XML schema for pmaps and matching are preliminary; this will be corrected in an upcoming
+version.
+
+MAX consists of two files: max.pl and Site_Max.pm.  They can be placed in any directory that is
+accessible to your users.  The Perl environment for MAX should be setup according to information
+in a previous archive, TestSetup, which was made available to all sites via the Wiki.
+
+MAX contains in-line documentation that can be displayed as follows:
+
+    % ./max.pl --help
+
+Use this information to learn how to run MAX.  The source code to MAX also contains information
+that might be useful.
