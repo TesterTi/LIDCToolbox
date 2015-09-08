@@ -128,13 +128,9 @@ To begin using the toolbox
 3. Open the file "LIDC_xml_2_pmap.m"
 4. Set the path stored in the variable "perl_library_path" to that which contains the above installed 
    perl packages.
-
 5. Run "LIDC_process_annotations.m"
-	
-
 
 If you find any problems or would like to contribute some code to the toolbox then please contact me.
-
 
 ## Acknowledgements
 
