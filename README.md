@@ -9,8 +9,7 @@ ANR Cosinus, ANR-10-COSI-012-03-FOSTER, 2011—2014): http://foster.univ-nc.nc/
 
 This toolbox accompanies the following paper:
 
-	T. Lampert, A. Stumpf, and P. Gancarski, 'An Empirical Study of Expert Agreement and Ground Truth 
-		Estimation', (submitted).
+T. Lampert, A. Stumpf, and P. Gancarski, 'An Empirical Study of Expert Agreement and Ground Truth Estimation', (submitted).
 
 I kindly request you to cite the paper if you use this toolbox for research purposes.
 
