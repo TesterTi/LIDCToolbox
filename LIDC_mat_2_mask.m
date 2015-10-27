@@ -137,20 +137,31 @@ function LIDC_mat_2_mask(image_path, output_path, studyID)
 
             img_bw = dicomread(image_file_list{j});
 
+            if ~isfield(dicomInfo, 'PixelPaddingValue')
+                warning('No padding value found, not creating mask');
+            end
+            
             temp_mask = zeros(dicomInfo.Height, dicomInfo.Width);
             % The pixel padding value is not consistent between the actual 
             % value in the image and that in the DICOM info so we set it to
             % the minimum value in the image if there is a value below 0
             actual_mask_value = min(min(img_bw));
-            if actual_mask_value < 0 && actual_mask_value ~= dicomInfo.PixelPaddingValue
-                warning(['The DICOM PixelPaddingValue used to create the mask has been corrected from ' ...
+            if actual_mask_value < 0
+                if isfield(dicomInfo, 'PixelPaddingValue') && actual_mask_value ~= dicomInfo.PixelPaddingValue
+                    warning(['The DICOM PixelPaddingValue used to create the mask has been corrected from ' ...
                                                num2str(dicomInfo.PixelPaddingValue) ' to ' num2str(actual_mask_value)]);
+                end
                 dicomInfo.PixelPaddingValue = actual_mask_value;
             end
-            temp_mask(img_bw == dicomInfo.PixelPaddingValue) = 1;
+            
+            if isfield(dicomInfo, 'PixelPaddingValue')
+                temp_mask(img_bw == dicomInfo.PixelPaddingValue) = 1;
+            end
             masks(:,:,k)  = temp_mask;
 
-            img_bw(img_bw == dicomInfo.PixelPaddingValue) = 0;
+            if isfield(dicomInfo, 'PixelPaddingValue')
+                img_bw(img_bw == dicomInfo.PixelPaddingValue) = 0;
+            end
             images(:,:,k) = img_bw;
 
             LIDC_slice_index(k) = dicomInfo.InstanceNumber;
