@@ -138,7 +138,7 @@ function LIDC_mat_2_mask(image_path, output_path, studyID)
             img_bw = dicomread(image_file_list{j});
 
             if ~isfield(dicomInfo, 'PixelPaddingValue')
-                warning('No padding value found, not creating mask');
+                warning('No padding value found. If negative values are found in the image then these will be used for the mask, if not, the mask will be empty');
             end
             
             temp_mask = zeros(dicomInfo.Height, dicomInfo.Width);
