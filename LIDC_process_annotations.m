@@ -96,6 +96,11 @@ default_pixel_spacing = 0.787109;
 % Turns off image missing warnings if using the XML only download
 no_image_file_missing_warnings = 0;
 
+% Ignore matching warnings when matching GT to images (i.e. if images do 
+% not exist, GTs will not be in anatomical order and not all images may be 
+% written, this is a 'feature' of the dataset and not an error in the code)
+ignore_matching_warnings = false;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -174,7 +179,7 @@ for i = 1:numel(xml_files)                 % so that they can be cleaned up if s
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
             
-            LIDC_mat_2_mask(xml_path, output_path, studyID)
+            LIDC_mat_2_mask(xml_path, output_path, studyID, ignore_matching_warnings)
             
             
             
@@ -183,7 +188,7 @@ for i = 1:numel(xml_files)                 % so that they can be cleaned up if s
             % in $output_path$/images and $output_path$/gts
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
-            LIDC_mat_2_gt_image(xml_path, output_path, studyID)
+            LIDC_mat_2_gt_image(xml_path, output_path, studyID, ignore_matching_warnings)
             
             
             

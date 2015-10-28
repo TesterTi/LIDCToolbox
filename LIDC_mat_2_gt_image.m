@@ -1,5 +1,4 @@
-function LIDC_mat_2_gt_image(image_path, output_path, studyID)
-
+function LIDC_mat_2_gt_image(image_path, output_path, studyID, ignore_matching_warnings)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -122,7 +121,9 @@ function LIDC_mat_2_gt_image(image_path, output_path, studyID)
     if all(match_found == 0)
         if numel(image_file_list) ~= 0
             warning(sprintf('No images were found that match the GT annotations (although it appears that there are DICOM images in the same directory as the XML file)\nPress any key to continue (output will not be in anatomical order)'));
-            pause
+            if ~ignore_matching_warnings
+                 pause
+            end
         else
             warning(['No image found (looking in ' image_path ') GTs will not be in slice order\n']);
         end
@@ -132,7 +133,9 @@ function LIDC_mat_2_gt_image(image_path, output_path, studyID)
             wrn1 = sprintf('Only %d correspondences were found between the readers'' annotations and the DICOM slice images\n', k);
             warning([wrn1 'Press any key to continue writing the GT images in partial order']);
             no_images = 2;
-            pause
+            if ~ignore_matching_warnings
+                pause
+            end
         end
         
     end
