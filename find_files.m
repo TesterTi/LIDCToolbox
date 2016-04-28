@@ -8,7 +8,8 @@ function [fileList] = find_files(dirName, extension, ignore_dirs)
 % the following paper:
 %
 %    T. Lampert, A. Stumpf, and P. Gancarski, 'An Empirical Study of Expert 
-%       Agreement and Ground Truth Estimation', (submitted).
+%       Agreement and Ground Truth Estimation', IEEE Transactions on Image
+%       Processing 25 (6): 2557–2572, 2016.
 %
 %
 % Recursively finds files in a directory structure

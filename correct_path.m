@@ -8,7 +8,8 @@ function p = correct_path(p)
 % the following paper:
 %
 %    T. Lampert, A. Stumpf, and P. Gancarski, 'An Empirical Study of Expert 
-%       Agreement and Ground Truth Estimation', (submitted).
+%       Agreement and Ground Truth Estimation', IEEE Transactions on Image
+%       Processing 25 (6): 2557–2572, 2016.
 %
 %
 % Makes sure that the path has the correct file separators for the OS and

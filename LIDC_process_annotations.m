@@ -9,7 +9,8 @@ function LIDC_process_annotations
 % the following paper:
 %
 %    T. Lampert, A. Stumpf, and P. Gancarski, 'An Empirical Study of Expert 
-%       Agreement and Ground Truth Estimation', (submitted).
+%       Agreement and Ground Truth Estimation', IEEE Transactions on Image
+%       Processing 25 (6): 2557–2572, 2016.
 %
 %
 % Runs through all of the LIDC scans within the directory specified by 

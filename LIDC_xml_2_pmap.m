@@ -8,7 +8,8 @@ function [new_path, new_filename] = LIDC_xml_2_pmap(xml_path, xml_filename, pixe
 % the following paper:
 %
 %    T. Lampert, A. Stumpf, and P. Gancarski, 'An Empirical Study of Expert 
-%       Agreement and Ground Truth Estimation', (submitted).
+%       Agreement and Ground Truth Estimation', IEEE Transactions on Image
+%       Processing 25 (6): 2557–2572, 2016.
 %
 %
 % Runs MAX to convert the XML annotation to a probability map.

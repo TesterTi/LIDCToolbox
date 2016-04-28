@@ -8,7 +8,8 @@ function [gts, slice_index, imageInfo, z_pos] = LIDC_pmap_2_mat(data_dir, filena
 % the following paper:
 %
 %    T. Lampert, A. Stumpf, and P. Gancarski, 'An Empirical Study of Expert 
-%       Agreement and Ground Truth Estimation', (submitted).
+%       Agreement and Ground Truth Estimation', IEEE Transactions on Image
+%       Processing 25 (6): 2557–2572, 2016.
 %
 %
 % Used by LIDC_pmap_2_mat to convert the XML probability map calculated 

@@ -8,7 +8,8 @@ function LIDC_mat_2_gt_image(image_path, output_path, studyID, ignore_matching_w
 % the following paper:
 %
 %    T. Lampert, A. Stumpf, and P. Gancarski, 'An Empirical Study of Expert 
-%       Agreement and Ground Truth Estimation', (submitted).
+%       Agreement and Ground Truth Estimation', IEEE Transactions on Image
+%       Processing 25 (6): 2557–2572, 2016.
 %
 %
 % The LIDC_convert_xml_2_mat function produces a MAT file with all the
