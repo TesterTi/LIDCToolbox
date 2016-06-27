@@ -131,6 +131,16 @@ To begin using the toolbox
 
 If you find any problems or would like to contribute some code to the toolbox then please contact me.
 
+
+## Validation
+
+The sample output of three scans is included in the "sample_output" directory. This is a sample of the output that should be expected when the full dataset is downloaded (i.e. annotations and images) and processed. When only the annotations are present, the "images" and "masks" directories will not be created.
+
+Please note that the images will appear black in most standard viewers, this is because the masks contain binary values (0s and 1s), and the scan images contain the original DICOM values and therefore they are not scaled to the standard image value range (0–255). The recommended viewing method is to load them into a programming environment and use an image viewing function that performs automatic range scaling, i.e. (using Matlab)
+<br>`img = imload(filename)`
+<br>`imagesc(img)`
+
+
 ## Acknowledgements
 
 Peyton Bland gave considerable advice with regards to the Max software upon which this toolbox is based.
