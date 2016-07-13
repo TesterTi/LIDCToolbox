@@ -5373,7 +5373,8 @@ sub simple_matching {
                         my $smzint = round( $smz, 0 );
                         my $smzcoord = $allz[ $smzint ];
                         my $sopinstanceuid = $z2siu{ $smzcoord };
-                        $locationstr = sprintf "i=\"%d\" j=\"%d\" z=\"%.3f\" sopinstanceuid=\"%s\" locationtype=\"single mark\"", $smx, $smy, $smzcoord, $sopinstanceuid;
+                        # The following line was commented by Thomas Lampert as it caused an error when processing LIDC-IDRI-0576, only to remain commented for use in the LIDC Matlab toolbox
+                        # $locationstr = sprintf "i=\"%d\" j=\"%d\" z=\"%.3f\" sopinstanceuid=\"%s\" locationtype=\"single mark\"", $smx, $smy, $smzcoord, $sopinstanceuid; 
                     }
                     else {
                         $sizeclassstr = 'sizeclass="large"';

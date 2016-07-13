@@ -55,6 +55,7 @@ reading_sessions = document.getChildNodes;
 
 
 slice_index = [];
+z_pos = [];
 c1 = 0;
 c_gt = 1;
 while ~isempty(reading_sessions.item(c1))

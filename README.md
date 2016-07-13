@@ -47,7 +47,7 @@ are found, the remaining slices can be obtained from the DICOM images quite easi
 To use the toolbox's functions, simply add the toolbox directory to Matlab's path. Within the header of each 
 function may be found a short description of its purpose.
 
-The function LIDC_xml_2_pmap uses the external Perl script max.pl 
+The function LIDC_xml_2_pmap uses (a slightly modified version of) the external Perl script max.pl 
 (https://wiki.cancerimagingarchive.net/display/Public/Lung+Image+Database+Consortium) and therefore requires 
 that Perl is installed, furthermore the following packages should be installed:
 
@@ -139,6 +139,17 @@ The sample output of three scans is included in the "sample_output" directory. T
 Please note that the images will appear black in most standard viewers, this is because the masks contain binary values (0s and 1s), and the scan images contain the original DICOM values and therefore they are not scaled to the standard image value range (0–255). The recommended viewing method is to load them into a programming environment and use an image viewing function that performs automatic range scaling, i.e. (using Matlab)
 <br>`img = imread(filename)`
 <br>`imagesc(img)`
+
+
+# Known Problems
+
+I have had to hard code the slice spacing for the following scans (max fails to infer them when the annotations have been separated):
+ * LIDC-IDRI-0247
+ * LIDC-IDRI-0626
+ * LIDC-IDRI-0675
+ * LIDC-IDRI-0767
+
+I used Max's `—z-analyze` option and chose the minimum spacing that was output. These values have been hard coded into the toolbox so when these xml files are encountered, the set spacings are used. See LIDC_xml_2_pmap.m for the specific values.
 
 
 ## Acknowledgements

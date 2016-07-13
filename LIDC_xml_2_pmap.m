@@ -51,8 +51,8 @@ perl_library_path = '/opt/local/lib/perl5/site_perl/5.12.4/';
 
 
 % Should be ok as it is (it's included with the toolbox)
-MAX_path          = [fileparts(which('LIDC_mat_2_gt_image')) filesep 'support_software/max-V107b/']; 
-    
+MAX_path          = [fileparts(which('LIDC_mat_2_gt_image')) filesep 'support_software/max-V107b/'];
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -112,14 +112,48 @@ fprintf('Processing file: %s\n', xml_filename);
 
 
 % MAKE MAX DIR
-mkdir(xml_path, 'max');
+if ~isdir([xml_path 'max'])
+    mkdir(xml_path, 'max');
+end
 
 % EXECUTE MAX
-cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --pixel-dim=%f --files=%s --dir-out=%s', pixel_spacing, [xml_path xml_filename], [xml_path 'max' filesep])];
+xml_filename_number = strsplit(xml_filename, '_');
+xml_filename_number = xml_filename_number{1};
+
+slice_spacing = -1;
+
+% For these scans Max fails to infer the slice spacing so I have hard coded
+% them (see the Known Problems section of the readme)
+if strcmp(xml_filename_number, '243')
+    slice_spacing = 2.5;
+end
+
+if strcmp(xml_filename_number, '244')
+    slice_spacing = 2.5;
+end
+
+if strcmp(xml_filename_number, '070')
+    slice_spacing = 2.5;
+end
+
+if strcmp(xml_filename_number, '135')
+    slice_spacing = 2.0;
+end
+
+if strcmp(xml_filename_number, '043')
+    slice_spacing = 1.8;
+end
+
+if slice_spacing == -1
+    cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --pixel-dim=%f --files=%s --dir-out=%s', pixel_spacing, [xml_path xml_filename], [xml_path 'max' filesep])];
+else
+    cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --pixel-dim=%f --slice-spacing=%f --files=%s --dir-out=%s', pixel_spacing, slice_spacing, [xml_path xml_filename], [xml_path 'max' filesep])];
+end
+
 fprintf('Executing: %s', cmd_str);
 status = system([path_str cmd_str]);
 
-if status > 0 && status ~= 120 % Some XML files are empty and we can ignore these (error code is 120)
+if status > 0 && status ~= 120 && status ~= 116 % Some XML files are empty and we can ignore these (error code is 120)
     error('There was a problem executing Max (perhaps a space in the input/output path or something more serious -- see Max output above)');
 end
 

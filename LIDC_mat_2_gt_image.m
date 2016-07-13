@@ -186,8 +186,11 @@ function LIDC_mat_2_gt_image(image_path, output_path, studyID, ignore_matching_w
 
 
         % Find the slices in which this annotator didn't mark anything
-        missing_gt_ind = ~ismember(sorted_overall_index, current_ann_slice_index);
-
+        if ~isempty(current_ann_slice_index)
+            missing_gt_ind = ~ismember(sorted_overall_index, current_ann_slice_index);
+        else
+            missing_gt_ind = ones(1, numel(sorted_overall_index));
+        end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Write the gts to file in order of slices
