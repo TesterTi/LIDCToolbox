@@ -156,3 +156,5 @@ I used Max's `—z-analyze` option and chose the minimum spacing that was output
 
 Peyton Bland gave considerable advice with regards to the Max software upon which this toolbox is based.
 Hamada Rasheed Hassan also contributed through extensive testing of the toolbox under Windows and in helping write this readme file.
+
+[![Analytics](https://ga-beacon.appspot.com/UA-112264682-1/welcome-page?pixel)](https://github.com/igrigorik/ga-beacon)
