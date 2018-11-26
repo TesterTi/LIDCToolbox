@@ -116,7 +116,16 @@ function LIDC_mat_2_mask(image_path, output_path, studyID, ignore_matching_warni
         % DICOM header
         if no_image == 0
             masks            = zeros(dicomInfo.Height, dicomInfo.Width, numel(overall_index));
-            images           = zeros(size(masks), 'uint16');
+            if dicomInfo.PixelRepresentation == 0
+                datatype = 'uint';
+            elseif dicomInfo.PixelRepresentation == 1
+                datatype = 'int';
+            end
+            bits = dicomInfo.BitsStored;
+            
+            datatype = strcat(datatype, num2str(bits));
+            
+            images           = zeros(size(masks), datatype);
         else
             masks            = [];
             images           = [];
@@ -251,10 +260,15 @@ function LIDC_mat_2_mask(image_path, output_path, studyID, ignore_matching_warni
                 t.setTag('ImageLength',         size(images,1));
                 t.setTag('ImageWidth',          size(images,2));
                 t.setTag('Photometric',         Tiff.Photometric.MinIsBlack);
-                t.setTag('BitsPerSample',       16);
+                t.setTag('BitsPerSample',       bits);
                 t.setTag('SamplesPerPixel',     1);
                 t.setTag('Compression',         Tiff.Compression.LZW);
                 t.setTag('PlanarConfiguration', Tiff.PlanarConfiguration.Chunky);
+                if strcmpi(datatype(1:3), 'int')
+                    t.setTag('SampleFormat',        Tiff.SampleFormat.Int);
+                elseif strcmpi(datatype(1:4), 'uint')
+                    t.setTag('SampleFormat',        Tiff.SampleFormat.UInt);
+                end
                 
                 t.write(images(:,:,i));
                 t.close();
