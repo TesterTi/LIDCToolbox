@@ -116,16 +116,28 @@ function LIDC_mat_2_mask(image_path, output_path, studyID, ignore_matching_warni
         % DICOM header
         if no_image == 0
             masks            = zeros(dicomInfo.Height, dicomInfo.Width, numel(overall_index));
+            
             if dicomInfo.PixelRepresentation == 0
                 datatype = 'uint';
             elseif dicomInfo.PixelRepresentation == 1
                 datatype = 'int';
+            else
+                error('The DICOM''s PixelRepresentation tag is neither 0 (uint) or 1 (int), this is not supported');
             end
-            bits = dicomInfo.BitsStored;
+            
+            bits = 2^ceil(log2(double(dicomInfo.BitsStored)));
+            
+            if bits > 32
+                error('Images with more than 32 bits are not supported');
+            end
             
             datatype = strcat(datatype, num2str(bits));
             
-            images           = zeros(size(masks), datatype);
+            if bits == 1
+                images           = zeros(size(masks), 'logical');
+            else
+                images           = zeros(size(masks), datatype);
+            end
         else
             masks            = [];
             images           = [];
@@ -268,6 +280,8 @@ function LIDC_mat_2_mask(image_path, output_path, studyID, ignore_matching_warni
                     t.setTag('SampleFormat',        Tiff.SampleFormat.Int);
                 elseif strcmpi(datatype(1:4), 'uint')
                     t.setTag('SampleFormat',        Tiff.SampleFormat.UInt);
+                else
+                    error('Unknown data type')
                 end
                 
                 t.write(images(:,:,i));
