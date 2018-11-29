@@ -145,7 +145,7 @@ end
 %[slice_index, s_ind] = sort(slice_index);
 %gts = gts(:,:,s_ind);
 
-[data_dir filename(1:end-4)]
+fprintf([data_dir filename(1:end-4)]);
 
 save([data_dir filename(1:end-4)], 'gts', 'slice_index', 'z_pos');
 
@@ -162,10 +162,10 @@ function imageInfo = getImageGeometry(appInfoHeaderNode)
         
         if strcmpi(contentNodes.item(c1).getNodeName, 'ImageGeometry')
             
-            imageInfo.pixelSize = str2num(contentNodes.item(c1).getAttributes.getNamedItem('pixelsize').getTextContent);
-            imageInfo.XDim = str2num(contentNodes.item(c1).getAttributes.getNamedItem('xdim').getTextContent);
-            imageInfo.YDim = str2num(contentNodes.item(c1).getAttributes.getNamedItem('ydim').getTextContent);
-            imageInfo.SliceSpacing = str2num(contentNodes.item(c1).getAttributes.getNamedItem('slicespacing').getTextContent);
+            imageInfo.pixelSize = str2double(contentNodes.item(c1).getAttributes.getNamedItem('pixelsize').getTextContent);
+            imageInfo.XDim = str2double(contentNodes.item(c1).getAttributes.getNamedItem('xdim').getTextContent);
+            imageInfo.YDim = str2double(contentNodes.item(c1).getAttributes.getNamedItem('ydim').getTextContent);
+            imageInfo.SliceSpacing = str2double(contentNodes.item(c1).getAttributes.getNamedItem('slicespacing').getTextContent);
             
         end
         

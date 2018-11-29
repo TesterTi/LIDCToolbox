@@ -47,8 +47,7 @@ xml_path = correct_path(xml_path);
 try
     docNode = xmlread([xml_path filesep filename]);
 catch e
-    error('Failed to read XML file %s.',filename);
-    return
+    error('Failed to read XML file %s.', filename);
 end
 
 
@@ -116,14 +115,11 @@ for i = 1:reading_session_count
         
     end
     
-    [~, fname] = fileparts(filename);
-    
-    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % The reason for this code is that MAX requires that there be more than
-    % one reader in each XML file, we have just removed all the others as
-    % we want to extract the individual readers. So now we add a dummy
-    % empty reader entry. XML Code:
+    % The reason for the following code is that MAX requires that there be 
+    % more than one reader in each XML file, we have just removed all the 
+    % others as we want to extract the individual readers. So now we add a 
+    % dummy empty reader entry. XML Code:
     %
     % <readingSession>
     %     <annotationVersion>3.12</annotationVersion>

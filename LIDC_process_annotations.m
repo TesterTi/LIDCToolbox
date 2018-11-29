@@ -10,7 +10,7 @@ function LIDC_process_annotations
 %
 %    T. Lampert, A. Stumpf, and P. Gancarski, 'An Empirical Study of Expert 
 %       Agreement and Ground Truth Estimation', IEEE Transactions on Image
-%       Processing 25 (6): 2557–2572, 2016.
+%       Processing 25 (6): 2557-2572, 2016.
 %
 %
 % Runs through all of the LIDC scans within the directory specified by 
@@ -92,10 +92,10 @@ LIDC_path   = '';  % REPLACE WITH LIDC DATSET PATH
 output_path = '';  % REPLACE WITH OUTPUT PATH
 
 % Used if no images are found (i.e. you have only downloaded the XML files)
-default_pixel_spacing = 0.787109; 
+default_pixel_spacing = 0.787109;
 
 % Turns off image missing warnings if using the XML only download
-no_image_file_missing_warnings = 0;
+ignore_missing_file_warnings = false;
 
 % Ignore matching warnings when matching GT to images (i.e. if images do 
 % not exist, GTs will not be in anatomical order and not all images may be 
@@ -110,10 +110,10 @@ ignore_matching_warnings = false;
 output_path = correct_path(output_path);
 LIDC_path   = correct_path(LIDC_path);
 
-if ~isempty(strfind(LIDC_path, ' '))
+if contains(LIDC_path, ' ')
     error('The LIDC path cannot contain spaces.');
 end
-if ~isempty(strfind(output_path, ' '))
+if contains(LIDC_path, ' ')
     error('The output path cannot contain spaces.');
 end
 
@@ -137,27 +137,29 @@ for i = 1:numel(xml_files)                 % so that they can be cleaned up if s
             % to pass to MAX (if not found, use the default)
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
-            no_image = 1;
+            missing_image = true;
             dcm_files = find_files(xml_path, '.dcm');
             for j = 1:numel(dcm_files)
                 dicomInformation = dicominfo(dcm_files{1});
                 
                 % Make sure that the StudyInstanceUID matches that found in
                 % the XML annotations
-                if strcmpi(strrep(dicomInformation.StudyInstanceUID, '1.3.6.1.4.1.14519.5.2.1.6279.6001.', ''), studyID) && no_image == 1
-                    no_image = 0;
+                if strcmpi(strrep(dicomInformation.StudyInstanceUID, '1.3.6.1.4.1.14519.5.2.1.6279.6001.', ''), studyID) && missing_image
+                    missing_image = false;
                     break
                 end
             end
 
-            if no_image == 0
+            if ~missing_image
                 pixel_spacing = dicomInformation.PixelSpacing(1);
+                slice_thickness = dicomInformation.SliceThickness;
             else
                 pixel_spacing = default_pixel_spacing;
-                if ~no_image_file_missing_warnings
+                slice_thickness = -1;
+                if ~ignore_missing_file_warnings
                     warning(['No image found (looking in ' xml_path ') continuing with the default pixel spacing of ' num2str(pixel_spacing) ...
                         '/nMasks and Images will not be created and the GTs will not be in slice order\n'...
-                        '/nThis warning can be turned off by setting no_image_file_missing_warnings = 1 in LIDC_process_annotations']);
+                        '/nThis warning can be turned off by setting ignore_missing_file_warnings = true in LIDC_process_annotations']);
                 end
             end
             
@@ -168,8 +170,68 @@ for i = 1:numel(xml_files)                 % so that they can be cleaned up if s
             % in a temporary directory
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
+            if missing_image % These are only used if the images do not exist because in these cases Max cannot automatically infer the slice spacing
+                switch studyID
+                    case '973595488903805096383507205745'
+                        slice_thickness = 2.5;
+                    case '769199091929930563098632346243'
+                        slice_thickness = 2.5;
+                    case '230628711415147360622019058241'
+                        slice_thickness = 2.5;
+                    case '184813778824165059499766817473'
+                        slice_thickness = 1.25;
+                    case '462307810912575525200563047628'
+                        slice_thickness = 2.5;
+                    case '290645258537791702736959842739'
+                        slice_thickness = 2.5;
+                    case '344370459068774891776634727699'
+                        slice_thickness = 2.5;
+                    case '373403474709639219417003839681'
+                        slice_thickness = 1.25;
+                    case '268602395458796193334776892547'
+                        slice_thickness = 2.5;
+                    case '814893999756843549134491977041'
+                        slice_thickness = 1.25;
+                    case '239106706584154405243531806759'
+                        slice_thickness = 2.5;
+                    case '177931410497444598503378575664'
+                        slice_thickness = 3;
+                    case '311744239959995611370181604400'
+                        slice_thickness = 3;
+                    case '385607958794725144174496012285'
+                        slice_thickness = 2.5;
+                    case '229359531540674087919898613528'
+                        slice_thickness = 1.25;
+                    case '998011886506191043815267149469'
+                        slice_thickness = 2.5;
+                    case '309197613983514716651302448908'
+                        slice_thickness = 2.5;
+                    case '233318337711699124969399854418'
+                        slice_thickness = 2.5;
+                    case '250876878281865060245064180921'
+                        slice_thickness = 2.5;
+                    case '101368220317159246676393493553'
+                        slice_thickness = 2.5;
+                    case '285544678683551057709080736846'
+                        slice_thickness = 2.5;
+                    case '306979641566588911923060002188'
+                        slice_thickness = 2.5;
+                    case '166927528009001339756280929911'
+                        slice_thickness = 2.5;
+                    case '854778727666988682245040938192'
+                        slice_thickness = 2.5;
+                end
+            end
+            
+            switch studyID % Max always fails with these even with the image determined spacing
+                case '208751380258614309420535124059'
+                    slice_thickness = 0.3;
+                case '282560440087299355954880509248'
+                    continue % this annotation only contains small nodules and max always fails so we skip
+            end
+            
             for j = 1:numel(new_xml_filenames)
-                LIDC_xml_2_pmap(new_xml_paths{i}{j}, new_xml_filenames{j}, pixel_spacing);
+                LIDC_xml_2_pmap(new_xml_paths{i}{j}, new_xml_filenames{j}, pixel_spacing, slice_thickness, [xml_path, filename], studyID);
             end
 
             

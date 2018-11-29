@@ -22,8 +22,11 @@ database, and then creates a TIFF image related to each slice of the scan.
 ## Overview
 
 
-The function works whether the images are present or not, the only caveat is that it uses the images to order
-the slices and therefore if this information is not present the output's order is not in 'anatomical' order.
+The function works whether the images are present or not. Nevertheless, the images are used to sort the slices 
+and therefore without them the output will not be in 'anatomical' order. The slice spacing is first determined
+from the dicom images if they are present, and if Max fails it is then calculated automatically from the 
+annotations.
+
 There are two paths to set in the LIDC_process_annotations.m file, the first to the LIDC dataset, this will be
 searched recursively for all XML files and the processing will be performed on each. The second path is the 
 output path, if the images are present in the dataset then three folders will be created: gts, images, masks.
@@ -143,13 +146,11 @@ Please note that the images will appear black in most standard viewers, this is 
 
 # Known Problems
 
-I have had to hard code the slice spacing for the following scans (max fails to infer them when the annotations have been separated):
- * LIDC-IDRI-0247
- * LIDC-IDRI-0626
- * LIDC-IDRI-0675
- * LIDC-IDRI-0767
-
-I used Max's `—z-analyze` option and chose the minimum spacing that was output. These values have been hard coded into the toolbox so when these xml files are encountered, the set spacings are used. See LIDC_xml_2_pmap.m for the specific values.
+Without the images Max (used in the backend) will attempt to infer the slice spacing from the annotations, which may fail or the automatically calculated value will cause error messages such as:
+<br>`FATAL[6501] (in MAX in sub rSpass2 near line 4366): Couldn't get a Z index at Z coordinate -105.300 mm`
+<br>I have manually added values for these cases, see the switch statement on line 175 of LIDC_process_annotations.m. If this happens for other cases, then you will need to manually add the slice spacing into the switch statement. The studyID to be used in the switch statement will be output during the failure. The slice spacing can be inferred from the DICOM info contained in the images (this is done automatically when they are present), by analysing the xml file with Max using the command (executed in the toolbox path):
+<br>`perl support_software/max-V107b/max-V107b.pl --skip-num-files-check --z-analyze --files=<path to xml file>`
+<br>or by trial-and-error. The toolbox does not use any information derived from this value. Besides, this occurs mainly (but not exclusively) in scans where only small nodules are marked and are therefore unused.
 
 
 ## Acknowledgements

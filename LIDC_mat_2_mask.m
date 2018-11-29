@@ -204,7 +204,7 @@ function LIDC_mat_2_mask(image_path, output_path, studyID, ignore_matching_warni
     
     if all(match_found == 0)
         if numel(image_file_list) ~= 0
-            warning(sprintf('No images were found that match the GT annotations (although it appears that there are DICOM images in the same directory as the XML file)\nPress any key to continue writing only the GTs'));
+            warning('No images were found that match the GT annotations (although it appears that there are DICOM images in the same directory as the XML file)\nPress any key to continue writing only the GTs');
             if ~ignore_matching_warnings
                 pause
             end

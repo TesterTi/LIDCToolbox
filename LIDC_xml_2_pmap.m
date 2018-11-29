@@ -1,4 +1,4 @@
-function [new_path, new_filename] = LIDC_xml_2_pmap(xml_path, xml_filename, pixel_spacing)
+function [new_path, new_filename] = LIDC_xml_2_pmap(xml_path, xml_filename, pixel_spacing, slice_spacing, parent_xml_file, studyID)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -117,44 +117,31 @@ if ~isdir([xml_path 'max'])
 end
 
 % EXECUTE MAX
-xml_filename_number = strsplit(xml_filename, '_');
-xml_filename_number = xml_filename_number{1};
 
-slice_spacing = -1;
-
-% For these scans Max fails to infer the slice spacing so I have hard coded
-% them (see the Known Problems section of the readme)
-if strcmp(xml_filename_number, '243')
-    slice_spacing = 2.5;
+passed_spacing = true;
+if slice_spacing == -1 % If no spacing is specified, calculate it automatically from the original xml file
+    slice_spacing = get_slice_spacing(MAX_path, parent_xml_file);
+    passed_spacing = false;
 end
 
-if strcmp(xml_filename_number, '244')
-    slice_spacing = 2.5;
-end
-
-if strcmp(xml_filename_number, '070')
-    slice_spacing = 2.5;
-end
-
-if strcmp(xml_filename_number, '135')
-    slice_spacing = 2.0;
-end
-
-if strcmp(xml_filename_number, '043')
-    slice_spacing = 1.8;
-end
-
-if slice_spacing == -1
-    cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --pixel-dim=%f --files=%s --dir-out=%s', pixel_spacing, [xml_path xml_filename], [xml_path 'max' filesep])];
-else
-    cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --pixel-dim=%f --slice-spacing=%f --files=%s --dir-out=%s', pixel_spacing, slice_spacing, [xml_path xml_filename], [xml_path 'max' filesep])];
-end
+cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --pixel-dim=%f --slice-spacing=%f --files="%s" --dir-out="%s"', pixel_spacing, slice_spacing, [xml_path xml_filename], [xml_path 'max' filesep])];
 
 fprintf('Executing: %s', cmd_str);
 status = system([path_str cmd_str]);
 
-if status > 0 && status ~= 120 && status ~= 116 % Some XML files are empty and we can ignore these (error code is 120)
-    error('There was a problem executing Max (perhaps a space in the input/output path or something more serious -- see Max output above)');
+if status > 0 && status ~= 116 % Some XML files are empty and we can ignore these (error code is 116)
+    % If max fails with the specified slice spacing, use the automatically
+    % calculated spacing
+    if passed_spacing
+        slice_spacing = get_slice_spacing(MAX_path, parent_xml_file);
+        cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --pixel-dim=%f --slice-spacing=%f --files="%s" --dir-out="%s"', pixel_spacing, slice_spacing, [xml_path xml_filename], [xml_path 'max' filesep])];
+        fprintf('Failed, retrying with automatically determined slice spacing: %s', cmd_str);
+        status = system([path_str cmd_str]);
+    end
+    
+    if status > 0 && status ~= 116
+        error('There was a problem executing Max (perhaps the slice spacing or something more serious -- see Max output above). The studyID was %s and the input file was %s', studyID, [xml_path xml_filename]);
+    end
 end
 
 
@@ -179,4 +166,12 @@ else
     new_filename = '';
 end
     
+end
+
+function slice_spacing = get_slice_spacing(MAX_path, xml_file)
+    slice_space_cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --z-analyze --files="%s"', xml_file)];
+    [~, cmdout] = system(slice_space_cmd_str, '-echo');
+    k_1 = strfind(cmdout,'A delta-Z of ');
+    k_2 = strfind(cmdout,' mm. appears ');
+    slice_spacing = str2double(cmdout(k_1+13:k_2-1));
 end
