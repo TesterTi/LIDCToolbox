@@ -133,7 +133,7 @@ if status > 0 && status ~= 116 % Some XML files are empty and we can ignore thes
     % If max fails with the specified slice spacing, use the automatically
     % calculated spacing
     if passed_spacing
-        slice_spacing = get_slice_spacing(MAX_path, parent_xml_file);
+        slice_spacing = get_slice_spacing(MAX_path, path_str, parent_xml_file);
         cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --pixel-dim=%f --slice-spacing=%f --files="%s" --dir-out="%s"', pixel_spacing, slice_spacing, [xml_path xml_filename], [xml_path 'max' filesep])];
         fprintf('Failed, retrying with automatically determined slice spacing: %s', cmd_str);
         status = system([path_str cmd_str]);
@@ -168,9 +168,9 @@ end
     
 end
 
-function slice_spacing = get_slice_spacing(MAX_path, xml_file)
+function slice_spacing = get_slice_spacing(MAX_path, path_str, xml_file)
     slice_space_cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --z-analyze --files="%s"', xml_file)];
-    [~, cmdout] = system(slice_space_cmd_str, '-echo');
+    [~, cmdout] = system([path_str slice_space_cmd_str], '-echo');
     k_1 = strfind(cmdout,'A delta-Z of ');
     k_2 = strfind(cmdout,' mm. appears ');
     slice_spacing = str2double(cmdout(k_1+13:k_2-1));
