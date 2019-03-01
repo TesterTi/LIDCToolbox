@@ -120,7 +120,7 @@ end
 
 passed_spacing = true;
 if slice_spacing == -1 % If no spacing is specified, calculate it automatically from the original xml file
-    slice_spacing = get_slice_spacing(MAX_path, parent_xml_file);
+    slice_spacing = get_slice_spacing(MAX_path, path_str, parent_xml_file);
     passed_spacing = false;
 end
 
