@@ -1,4 +1,4 @@
-function [gts, slice_index, imageInfo, z_pos] = LIDC_pmap_2_mat(data_dir, filename)
+function [gts, slice_index, z_pos] = LIDC_pmap_2_mat(data_dir, filename)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -41,9 +41,17 @@ function [gts, slice_index, imageInfo, z_pos] = LIDC_pmap_2_mat(data_dir, filena
 
 try
     docNode = xmlread([data_dir filename]);
+    
 catch e
-    warning('Invalid or empty XML file (happens if reader only annotated small nodes, <= 3mm), ignoring...');
+    warning('Invalid or empty XML file (happens if reader only annotated small nodes, <= 3mm). This will be ignored and a blank GT created, this should be checked.');
     gts = [];
+    
+    % Create empty output file so that correct number of annotators is known
+    fprintf([data_dir filename(1:end-4)]);
+    slice_index = [];
+    z_pos = [];
+    save([data_dir filename(1:end-4)], 'gts', 'slice_index', 'z_pos');
+    
     return
 end
 
@@ -51,8 +59,6 @@ fprintf('Converting PMAP to MAT format...');
 
 document = docNode.getDocumentElement;
 reading_sessions = document.getChildNodes;
-
-
 
 slice_index = [];
 z_pos = [];

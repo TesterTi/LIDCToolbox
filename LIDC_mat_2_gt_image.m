@@ -176,9 +176,37 @@ function LIDC_mat_2_gt_image(image_path, output_path, studyID, ignore_matching_w
     fprintf(fid, 'Original Data Path: %s\n', image_path);
     fprintf(fid, 'Study Instance UID: 1.3.6.1.4.1.14519.5.2.1.6279.6001.%s\n', studyID);
 
-    for i = 1:numel(annotator_file_list)
+    gts_size = [];
+    i = 1;
+    missing = 0;
+    max_missing = numel(annotator_file_list);
+    while i <= numel(annotator_file_list)
 
         load(annotator_file_list{i}); % loads gts and slice_index
+        
+        if ~isempty(gts)
+            % save the GT size in case MAX failed with some
+            gts_size = size(gts);
+        else
+            missing = missing + 1;
+            % if the GT is empty (MAX failed), create blank GT image
+            if ~isempty(gts_size)
+                gts = zeros(gts_size(1:2));
+            else
+                if missing < max_missing
+                    % put it at the end, hopefully another will have the
+                    % gt size
+                    annotator_file_list{end+1} = annotator_file_list{i};
+                    i = i + 1;
+                    continue
+                else
+                    % return without creating gts as they are all empty
+                    i = i + 1;
+                    continue;
+                end
+            end
+        end
+        
         gts(gts > 0) = 1;
         current_ann_slice_index = slice_index;
         clear slice_index
@@ -236,6 +264,9 @@ function LIDC_mat_2_gt_image(image_path, output_path, studyID, ignore_matching_w
                 end
             end
         end
+        
+        i = i + 1;
+        
     end
     
     fclose(fid);

@@ -148,24 +148,18 @@ end
 % CONVERT OUTPUT INTO A MAT FILE
 gt = LIDC_pmap_2_mat([xml_path, filesep, 'max', filesep], 'pmap.xml');
 
-if ~isempty(gt)
-    
-    [~, patient_id] = fileparts(xml_filename);
-    
-    j = 1;
-    while exist([xml_path filesep 'mat_GTs' filesep patient_id '_' num2str(j) '.mat'], 'file')
-        j = j + 1;
-    end
-    
-    new_path     = [xml_path filesep 'mat_GTs' filesep];
-    new_filename = [patient_id '_' num2str(j) '.mat'];
-    
-    movefile([xml_path, filesep, 'max', filesep, 'pmap.mat'], [new_path new_filename]);
-else
-    new_path     = '';
-    new_filename = '';
+[~, patient_id] = fileparts(xml_filename);
+
+j = 1;
+while exist([xml_path filesep 'mat_GTs' filesep patient_id '_' num2str(j) '.mat'], 'file')
+    j = j + 1;
 end
-    
+
+new_path     = [xml_path filesep 'mat_GTs' filesep];
+new_filename = [patient_id '_' num2str(j) '.mat'];
+
+movefile([xml_path, filesep, 'max', filesep, 'pmap.mat'], [new_path new_filename]);
+
 end
 
 function slice_spacing = get_slice_spacing(MAX_path, path_str, xml_file)
