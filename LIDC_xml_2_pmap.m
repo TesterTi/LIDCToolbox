@@ -9,7 +9,7 @@ function [new_path, new_filename] = LIDC_xml_2_pmap(xml_path, xml_filename, pixe
 %
 %    T. Lampert, A. Stumpf, and P. Gancarski, 'An Empirical Study of Expert 
 %       Agreement and Ground Truth Estimation', IEEE Transactions on Image
-%       Processing 25 (6): 2557–2572, 2016.
+%       Processing 25 (6): 2557-2572, 2016.
 %
 %
 % Runs MAX to convert the XML annotation to a probability map.
@@ -124,7 +124,11 @@ if slice_spacing == -1 % If no spacing is specified, calculate it automatically 
     passed_spacing = false;
 end
 
-cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --pixel-dim=%f --slice-spacing=%f --files="%s" --dir-out="%s"', pixel_spacing, slice_spacing, [xml_path xml_filename], [xml_path 'max' filesep])];
+if strcmpi(computer, 'MACI64') || strcmpi(computer, 'GLNXA64')
+    cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --pixel-dim=%f --slice-spacing=%f --files=''%s'' --dir-out=''%s''', pixel_spacing, slice_spacing, [xml_path xml_filename], [xml_path 'max' filesep])];
+else
+    cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --pixel-dim=%f --slice-spacing=%f --files=%s --dir-out=%s', pixel_spacing, slice_spacing, [xml_path xml_filename], [xml_path 'max' filesep])];
+end
 
 fprintf('Executing: %s', cmd_str);
 status = system([path_str cmd_str]);
@@ -134,7 +138,11 @@ if status > 0 && status ~= 116 % Some XML files are empty and we can ignore thes
     % calculated spacing
     if passed_spacing
         slice_spacing = get_slice_spacing(MAX_path, path_str, parent_xml_file);
-        cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --pixel-dim=%f --slice-spacing=%f --files="%s" --dir-out="%s"', pixel_spacing, slice_spacing, [xml_path xml_filename], [xml_path 'max' filesep])];
+        if strcmpi(computer, 'MACI64') || strcmpi(computer, 'GLNXA64')
+            cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --pixel-dim=%f --slice-spacing=%f --files=''%s'' --dir-out=''%s''', pixel_spacing, slice_spacing, [xml_path xml_filename], [xml_path 'max' filesep])];
+        else
+            cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --pixel-dim=%f --slice-spacing=%f --files=%s --dir-out=%s', pixel_spacing, slice_spacing, [xml_path xml_filename], [xml_path 'max' filesep])];
+        end    
         fprintf('Failed, retrying with automatically determined slice spacing: %s', cmd_str);
         status = system([path_str cmd_str]);
     end
@@ -159,11 +167,15 @@ new_path     = [xml_path filesep 'mat_GTs' filesep];
 new_filename = [patient_id '_' num2str(j) '.mat'];
 
 movefile([xml_path, filesep, 'max', filesep, 'pmap.mat'], [new_path new_filename]);
-
+    
 end
 
 function slice_spacing = get_slice_spacing(MAX_path, path_str, xml_file)
-    slice_space_cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --z-analyze --files="%s"', xml_file)];
+    if strcmpi(computer, 'MACI64') || strcmpi(computer, 'GLNXA64')
+        slice_space_cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --z-analyze --files=''%s''', xml_file)];
+    else
+        slice_space_cmd_str = ['perl "' MAX_path sprintf('max-V107b.pl" --skip-num-files-check --z-analyze --files=%s', xml_file)];
+    end
     [~, cmdout] = system([path_str slice_space_cmd_str], '-echo');
     k_1 = strfind(cmdout,'A delta-Z of ');
     k_2 = strfind(cmdout,' mm. appears ');

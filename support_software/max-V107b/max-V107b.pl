@@ -2124,7 +2124,7 @@ if ( $verbose >= 4 ) {
 if ( $prependdirin && @filelist ) {
     my @tmplist = split(/,/,join(',',@filelist));
     @filelist = ();
-    push @filelist, $dirin . '/' . $_ foreach ( @tmplist );
+    push @filelist, File::Spec->catfile( $dirin , $_ ) foreach ( @tmplist );
 }
 
 # Get the XML files to process from the specified directory (unless @filelist to be populated already because of the presence of the --files option):
@@ -2356,7 +2356,7 @@ print "Adding the suffix \"$suffix\" to selected output filenames.\n" if $verbos
 # Open the files we'll need for outputting XML, etc.:
 # * marking history:
 if ( $xmlhistory ) {
-    $historyxmlfile = $dirout . '/' . HISTORYXMLDEFFILENAME;
+    $historyxmlfile = File::Spec->catfile( $dirout, HISTORYXMLDEFFILENAME );
     # Use a regex that starts from the right and matches the first '.'; replace it with the suffix followed by a '.'
     $historyxmlfile =~ s/(\.)(?!.*\.)/$suffix\./ if $addsuffix;
     print "Opening $historyxmlfile \n" if $verbose >= 5;
@@ -2375,7 +2375,7 @@ if ( $xmlhistory ) {
 }
 # * matching results:
 if ( $xmlmatch ) {
-    $matchingxmlfile = $dirout . '/' . MATCHINGXMLDEFFILENAME;
+    $matchingxmlfile = File::Spec->catfile( $dirout, MATCHINGXMLDEFFILENAME );
     $matchingxmlfile =~ s/(\.)(?!.*\.)/$suffix\./ if $addsuffix;
     print "Opening $matchingxmlfile \n" if $verbose >= 5;
     make_backup($matchingxmlfile);
@@ -2393,7 +2393,7 @@ if ( $xmlmatch ) {
 }
 # * CXR request XML:
 if ( $xmlcxrreq ) {
-    $cxrreqxmlfile = $dirout . '/' . CXRREQXMLDEFFILENAME;
+    $cxrreqxmlfile = File::Spec->catfile( $dirout, CXRREQXMLDEFFILENAME );
     print "Opening $cxrreqxmlfile \n" if $verbose >= 5;
     make_backup($cxrreqxmlfile);
     #""" User message doc: 6318: Error in opening the CXR request XML file (or its directory) for writing.
@@ -2410,7 +2410,7 @@ if ( $xmlcxrreq ) {
 }
 # * pmaps:
 if ( $xmlpmaps ) {
-    $pmapxmlfile = $dirout . '/' . PMAPXMLDEFFILENAME;
+    $pmapxmlfile = File::Spec->catfile( $dirout, PMAPXMLDEFFILENAME );
     print "Opening $pmapxmlfile \n" if $verbose >= 5;
     make_backup($pmapxmlfile);
     #""" User message doc: 6308: Error in opening the pmap XML file (or its directory) for writing.
@@ -2427,7 +2427,7 @@ if ( $xmlpmaps ) {
 }
 # * selected data structure(s):
 if ( $save_other ) {
-    $savefile = $dirsave . '/' . SAVEDATADEFFILENAME;
+    $savefile = File::Spec->catfile( $dirsave, SAVEDATADEFFILENAME );
     $savefile =~ s/(\.)(?!.*\.)/$suffix\./ if $addsuffix;
     print "Opening $savefile \n" if $verbose >= 5;
     make_backup($savefile);
@@ -2445,7 +2445,7 @@ if ( $save_other ) {
 }
 # * save the user messages
 if ( $savemessages ) {
-    $messagesfile = $dirout . '/' . MSGDEFFILENAME;
+    $messagesfile = File::Spec->catfile( $dirout, MSGDEFFILENAME );
     $messagesfile =~ s/(\.)(?!.*\.)/$suffix\./ if $addsuffix;
     print "Opening $messagesfile \n" if $verbose >= 5;
     make_backup($messagesfile);
@@ -2466,7 +2466,7 @@ if ( $savemessages ) {
 # * saved info for use between sessions:
 # -- large nodule info:
 if ( $save_lni ) {
-    $lnifile = $dirsave . '/' . LNIDEFFILENAME;
+    $lnifile = File::Spec->catfile( $dirsave, LNIDEFFILENAME );
     $lnifile =~ s/(\.)(?!.*\.)/$suffix\./ if $addsuffix;
     print "Opening $lnifile \n" if $verbose >= 5;
     make_backup($lnifile);
@@ -2481,7 +2481,7 @@ if ( $save_lni ) {
                                         verbose => 1,
                                         code => $Site_Max::RETURN_CODE{savefileouterror}
                                     );
-    $lni1file = $dirsave . '/' . LNI1DEFFILENAME;
+    $lni1file = File::Spec->catfile( $dirsave, LNI1DEFFILENAME );
     $lni1file =~ s/(\.)(?!.*\.)/$suffix\./ if $addsuffix;
     print "Opening $lni1file \n" if $verbose >= 5;
     make_backup($lni1file);
@@ -3026,8 +3026,9 @@ else {
         print "\nCheck for QA technical error #6[original]:\n";
         # Index thru %majority and check that the reader has marked something (nodule, small nodule or non-nodule)
         # close to each member of %majority.
-        my $lnifile  = $dirsave . '/' . LNIDEFFILENAME;
-        my $lni1file = $dirsave . '/' . LNI1DEFFILENAME;
+	my $lnifile = File::Spec->catfile( $dirsave, LNIDEFFILENAME );
+
+	my $lni1file = File::Spec->catfile( $dirsave, LNI1DEFFILENAME );
         # Both files must be present to do this test...
         if ( ! -e $lnifile || ! -e $lni1file ) {
             #""" User message doc: 6317: One of the files containing large nodule information (used for QA) does not exist.
@@ -3131,7 +3132,8 @@ else {
     if ( $qa_droplg ) {
         print "\nCheck for QA technical error #7:\n";
         # Compare large nodule IDs between the blinded and unblinded reads...
-        my $lnifile = $dirsave . '/' . LNIDEFFILENAME;
+	my $lnifile = File::Spec->catfile( $dirsave, LNIDEFFILENAME );
+
         if ( -e $lnifile ) {
             my %bl_centroids = %{ doit ( $lnifile ) };
             print "dump of \%bl_centroids (restored)... \n", Dumper(%bl_centroids) if $verbose >= 4;
@@ -3432,7 +3434,7 @@ END {
         print "\n";
         print "Messages could not be saved to file as requested.\n\n" if $error_in_saving_messages;
     }
-    
+
     print "Exiting\n\n";
     exit $code; #$?;
     

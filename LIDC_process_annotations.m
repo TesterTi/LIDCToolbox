@@ -113,7 +113,7 @@ LIDC_path   = correct_path(LIDC_path);
 if contains(LIDC_path, ' ')
     error('The LIDC path cannot contain spaces.');
 end
-if contains(LIDC_path, ' ')
+if contains(output_path, ' ')
     error('The output path cannot contain spaces.');
 end
 
