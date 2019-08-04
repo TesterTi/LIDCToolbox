@@ -251,7 +251,7 @@ function LIDC_mat_2_gt_image(image_path, output_path, studyID, ignore_matching_w
 
                     end
 
-                    if i == 1
+                    if i - missing == 1
                         if k == 1
                             fprintf(fid, 'slice: %d - z pos: %f - SOPInstanceUID: %s - DICOM filename: %s\n', written_count, sorted_z_pos(j), sorted_overall_index{j}, sorted_DICOM_filename{j});
                         else
