@@ -151,6 +151,23 @@ end
 %[slice_index, s_ind] = sort(slice_index);
 %gts = gts(:,:,s_ind);
 
+i = 1;
+while i < numel(slice_index)
+    locations = find(strcmp(slice_index, slice_index{i}));
+    
+    if numel(locations) > 1
+        for j = locations(2:end)
+            gts(:, :, locations(1)) = gts(:, :, locations(1)) + gts(:, :, j);
+        end
+        
+        gts(:, :, locations(2:end)) = [];
+        slice_index(locations(2:end)) = [];
+        z_pos(locations(2:end)) = [];
+    end
+    
+    i = i + 1;
+end
+
 fprintf([data_dir filename(1:end-4)]);
 
 save([data_dir filename(1:end-4)], 'gts', 'slice_index', 'z_pos');
